@@ -1,6 +1,12 @@
 'use client';
 
 import { useState } from 'react';
+import Image from 'next/image';
+
+interface GenerateResponse {
+  imageUrl?: string;
+  error?: string;
+}
 
 export default function TextToImage() {
   const [prompt, setPrompt] = useState('');
@@ -25,13 +31,15 @@ export default function TextToImage() {
         body: JSON.stringify({ prompt }),
       });
 
-      const data = await response.json();
+      const data = await response.json() as GenerateResponse;
 
       if (!response.ok) {
         throw new Error(data.error || 'Failed to generate image');
       }
 
-      setImageUrl(data.imageUrl);
+      if (data.imageUrl) {
+        setImageUrl(data.imageUrl);
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Something went wrong');
     } finally {
@@ -79,10 +87,13 @@ export default function TextToImage() {
               <div className="mt-8 space-y-4">
                 <h2 className="text-2xl font-semibold">Your Generated Image:</h2>
                 <div className="relative rounded-lg overflow-hidden bg-white/5 border border-white/20">
-                  <img
+                  <Image
                     src={imageUrl}
                     alt={prompt}
+                    width={1024}
+                    height={1024}
                     className="w-full h-auto"
+                    unoptimized
                   />
                 </div>
                 <a

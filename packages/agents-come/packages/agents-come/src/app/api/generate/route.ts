@@ -2,7 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 
 export async function POST(request: NextRequest) {
   try {
-    const { prompt } = await request.json();
+    const body = await request.json() as { prompt?: string };
+    const { prompt } = body;
 
     if (!prompt || typeof prompt !== 'string') {
       return NextResponse.json(
